@@ -1,0 +1,298 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "GroupChat";
+}
+
+
+
+@section topCSS{
+    <link rel="stylesheet" href="~/css/style.css">
+
+}
+
+    <div class="header">
+        <h2 id="title">ConnChat 聊天室</h2>
+        
+        <label id="username" class="invisible">@ViewBag.Sex</label>
+
+
+    </div>
+
+<div id="AllButton" class="content">
+
+    <!--<div id="Home" style="text-align:center;">
+        <input id="Single" type="button" class="button" value="單聊" onclick="Hind();" />
+        <input id="Group" type="button" class="button" value="群聊" disabled="disabled" onclick="Hind();" />
+
+    </div>-->
+
+    <div id="chooseXY" style="text-align:center;">
+        <input id="chooseY" type="button" value="男生" class="button" onclick="choose('Y');" />
+
+
+        <input id="chooseX" type="button" value="女生" class="button" onclick="choose('X');" />
+
+    </div>
+
+
+</div>
+
+<div id="RoomList" class="content clearfix">
+
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-4"></div>
+    <ul id="UserList"></ul>
+    <div class="col-md-8"></div>
+</div>
+
+
+
+@section scripts {
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script type="text/javascript">
+        var chat
+        var roomcount = 0;
+        $(function () {
+            //兩邊都會定義自己的 涵式 給對方用
+            //建立連線
+            chat = $.connection.LoginChat;
+
+            //定義涵式
+            chat.client.showMessage = function (Message) {
+                alert(Message);
+            }
+
+            //update Cookie Web
+            chat.client.updateCookie = function (ClientID) {
+                //alert(ClientID);
+                var d = new Date();
+                d.setTime(d.getTime() + (3 * 24 * 60 * 60 * 1000));//3天
+                var expires = "expires=" + d.toGMTString();
+                document.cookie = "UserID=" + ClientID + "; " + expires;
+            }
+
+            //用來登入的時候 要做甚麼事
+            chat.client.LoginState = function (State) {
+                //要做接value的 clientfunction
+                /*if (State == "A") {
+
+                    chat.server.existCookie("", State);//choose記成是 A 代表是要 直接倒到 聊天畫面的
+                    chat.server.activeRoom("");
+                }   */
+
+            }
+
+
+            chat.client.WaitRoom = function (Msg) {
+                alert(Msg);
+            }
+
+            //(邏輯可以 剩前端調整)
+            chat.client.sendMessageA = function (roomname, id, message) {
+                var cookie = AccessCookie()
+
+                if (id == cookie) {
+                    var parent = document.getElementById(roomname);
+                    var div = document.createElement("div");
+                    div.setAttribute("class", "me");
+                    div.innerHTML = message;
+
+                    parent.appendChild(div);
+                }
+                else {
+                    var parent = document.getElementById(roomname);
+                    var div = document.createElement("div");
+                    div.setAttribute("class", "other");
+                    div.innerHTML = message;
+
+                    parent.appendChild(div);
+                }
+
+
+            }
+
+            chat.client.MsgReload = function (roomname, FirstCookie, message) {
+                //var cookie = AccessCookie()
+                var WhoMsg = message.split(",")
+
+
+                for (var count = 0; count < WhoMsg.length - 1; count++) {
+
+                    var Msg = WhoMsg[count].split(":")
+
+                    if (Msg[0] == FirstCookie) {
+
+                        var parent = document.getElementById(roomname);
+                        var div = document.createElement("div");
+                        div.setAttribute("class", "me");
+
+                        if (Msg[1] != undefined) {
+                            div.innerHTML = Msg[1];
+                        }
+
+
+                        parent.appendChild(div);
+
+
+                    }
+                    else {
+
+
+                        var parent = document.getElementById(roomname);
+                        var div = document.createElement("div");
+                        div.setAttribute("class", "other");
+                        div.innerHTML = Msg[1];
+
+                        parent.appendChild(div);
+
+                    }
+
+
+                }
+
+
+            }
+
+
+
+            //定義離開房間的涵式
+            chat.client.removeRoom = function (data) {
+                alert(data);
+            }
+
+            chat.client.addRoomA = function (Status) {
+                $("#btnSent").attr('disabled', false);
+                $("#StatusMsg").remove();
+            }
+
+            //定義加入房間的涵式
+            chat.client.addRoom = function (roomname, Status) {
+                //alert(roomname);
+                var html =
+                    '<p id="StatusMsg"></p>\
+                                <div class="Aoo1" id = "' + roomname + '" roomname = "' + roomname + '" >\
+                                <button onclick="RemoveRoom(this)"  class="btn-danger">退出</button>\
+                                            <input id = "Msg" class="right border" type="text" /> <button id="btnSent" class="btn btn-success" onclick="SendMessage(this)">發送</button>\
+                                            </div>'
+                $("#RoomList").append(html);
+
+                if (Status == "A") {
+
+                }
+                else if (Status == "B") {
+
+                    $("#btnSent").attr('disabled', true);
+                    $("#StatusMsg").text("請等待對方進入聊天室!!!");
+                }
+                else if (Status == "F") {
+                    $("#btnSent").attr('disabled', true);
+                    $("#StatusMsg").text("對方已離開!!!");
+                }
+
+                $("#AllButton").hide();
+            }
+
+
+            $.connection.hub.start().done(function () {
+
+                ShowCookie();//判斷是要哪一個頁面，如果是 有msg的人 就會回到聊天畫面
+                //$('#chooseXY').hide();
+
+
+
+            }).fail(function (e) {
+                alert(e);
+            });
+
+            $.connection.hub.error(function (error) {
+                console.log('SignalR error: ' + error)
+            });
+
+
+        });
+
+        //要用server function要先定義了 才可以用
+        //對server傳送資料的function
+        function SendMessage(btn) {
+            //alert("sendMessage2");
+            var message = $(btn).prev().val();//前一個功能他的值
+            var room = $(btn).parent();
+            
+            message =":" + message;
+            var roomname = $(room).attr("id");
+            $('#Msg').val(''), focus();
+            //alert(roomname);
+            chat.server.sendMessage(roomname, message);
+        }
+
+
+        //server
+        function RemoveRoom(btn) {
+            alert("RemoveRoom");
+            $("#AllButton").show();
+            $('#Home').show();
+            $('#chooseXY').hide();
+            $("#StatusMsg").remove();
+            var room = $(btn).parent();//parent就是到他的上一層 去尋找
+            var roomname = $(room).attr("roomname");
+            $(room).remove();//把這一個div移除掉
+            chat.server.removeFromRoom(roomname);
+
+        }
+
+
+        //server
+        function choose(iChoose) {           
+            iChoose = $("#username").html() + "," + iChoose;
+            chat.server.existCookie(iChoose);
+            //chat.server.activeRoom();
+        }
+
+        //font
+        function Hind() {
+            //alert("test");
+            $('#Home').hide();
+            $('#chooseXY').show();
+
+        }
+
+
+        //server把Cookie存入後端
+        function ShowCookie() {
+            var name = "UserID=";
+            var ca = document.cookie.split(';');
+            var Cookie = "";
+            var res = "";
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) == 0) Cookie = c.substring(name.length, c.length);
+            }
+
+            chat.server.accessCookie(Cookie);
+
+        }
+
+        //front
+        function AccessCookie() {
+            var name = "UserID=";
+            var ca = document.cookie.split(';');
+            var Cookie = "";
+            var res = "";
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) == 0) Cookie = c.substring(name.length, c.length);
+            }
+
+            return Cookie;
+
+        }
+
+
+    </script>
+}

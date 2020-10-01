@@ -1,0 +1,46 @@
+﻿@using Login.Models
+@using Microsoft.AspNet.Identity
+@model LoginViewModel
+@{
+
+
+    ViewBag.Title = "登入";
+}
+
+@if (Request.IsAuthenticated)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Getting started</h2>
+            <p>
+                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+                enables a clean separation of concerns and gives you full control over markup
+                for enjoyable, agile development.
+            </p>
+
+            <p>@Html.ActionLink("聊 天", "GroupChat", "Home", new { UserId = User.Identity.Name }, new { @class = "btn btn-default" })</p>
+        </div>
+
+    </div>
+}
+else
+{
+    <h2 class="col-md-12 text-center">@ViewBag.Title.</h2>
+    <div class="row">
+        <div class="col-md-12 text-center">
+
+            <h4>只允許Facebook登入。</h4>
+            <section id="socialLoginForm">
+                @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+            </section>
+        </div>
+
+
+    </div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

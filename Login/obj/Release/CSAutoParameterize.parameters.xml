@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="LoginChat-Web.config Connection String" description="LoginChat 應用程式在 web.config 中用來存取資料庫的連接字串。" defaultValue="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=LoginChat; Integrated Security=True; MultipleActiveResultSets=True;AttachDbFilename=|DataDirectory|LoginChat.mdf;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\momom\\Music\\Success\\登入畫面\\Login\\Login\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='LoginChat']/@connectionString" />
+  </parameter>
+  <parameter name="LoginChat_DatabasePublish-Web.config Connection String" description="LoginChat_DatabasePublish 應用程式在 web.config 中用來存取資料庫的連接字串。" defaultValue="LoginChat_DatabasePublish.ConnetionString" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\momom\\Music\\Success\\登入畫面\\Login\\Login\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='LoginChat_DatabasePublish']/@connectionString" />
+  </parameter>
+</parameters>

@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNet.Identity
+@model IEnumerable<Login.Models.TestUserIntroduce>
+
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>ConnChat</h1>
+    <p class="lead">用聊天連結彼此，選男選女免費聊天</p>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Getting started</h2>
+
+        <div class="UserIntroduce">
+            <table class="tabuserInt">
+                <tr>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserPhotoUrl)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.LoginStatus)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(model => model.GoodNumber)
+                    </th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+
+                        <td class="tduserInt">
+                            <img src="@Html.DisplayFor(Model => item.UserPhotoUrl)" />
+
+                        </td>
+                        <td class="tduserInt">
+                            @Html.DisplayFor(Model => item.Name)
+                        </td>
+                        <td class="tduserInt">
+                            @Html.DisplayFor(Model => item.LoginStatus)
+                        </td>
+                        <td class="tduserInt">
+                            @Html.DisplayFor(Model => item.GoodNumber)
+                        </td>
+
+
+                    </tr>
+                }
+            </table>
+
+        </div>
+
+        <p>@Html.ActionLink("聊 天", "GroupChat", "Home", null, new { @class = "btn btn-default" })</p>
+    </div>
+
+</div>

@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>ConnChat</h1>
+    <p class="lead">交友為甚麼要付費? 免費選擇性別就可聊天</p>
+
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Getting started</h2>
+        <p>
+            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+            enables a clean separation of concerns and gives you full control over markup
+            for enjoyable, agile development.
+        </p>
+
+        <p>@Html.ActionLink("聊 天", "GroupChat", "Home", null, new { @class = "btn btn-default" })</p>
+    </div>
+
+</div>
